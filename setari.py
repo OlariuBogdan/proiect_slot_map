@@ -82,14 +82,14 @@ LINII_PLATA = {
 CALE_FUNDAL = 'grafica/bacground.png'
 
 MAPARE_GRAFICA = {
-    WILD: 'grafica/tiganu.png',
-    SCATTER: 'grafica/caruta.png',
-    SAPTE: 'grafica/0_seven.png',
-    FEMEIE: 'grafica/gagica.png',
-    CAL: 'grafica/cal.png',
-    SALBA: 'grafica/salba.png',
-    INEL: 'grafica/ghiul.png',
-    POTCOAVA: 'grafica/potcoava 50 copy.png',
-    ACORDEON: 'grafica/acordeon..png',
-    TAMBURINA: 'grafica/tamburina.png'
+    WILD: 'grafica/grafica/tiganu.png',
+    SCATTER: 'grafica/grafica/caruta.png',
+    SAPTE: 'grafica/grafica/0_seven.png',
+    FEMEIE: 'grafica/grafica/gagica.png',
+    CAL: 'grafica/grafica/cal.png',
+    SALBA: 'grafica/grafica/salba.png',
+    INEL: 'grafica/grafica/ghiul.png',
+    POTCOAVA: 'grafica/grafica/potcoava 50 copy.png',
+    ACORDEON: 'grafica/grafica/acordeon..png',
+    TAMBURINA: 'grafica/grafica/tamburina.png'
 }
