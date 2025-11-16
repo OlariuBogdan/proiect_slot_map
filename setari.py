@@ -5,9 +5,12 @@ LATIME = 1280
 INALTIME = 720
 FPS = 60
 
+# --- Mapare Nume Fișiere Grafice ---
+CALE_FUNDAL = 'grafica/grafica/bg.png'
+
 # --- Setări de Dimensiune ---
-DIMENSIUNE_CELULA = 200 
-MARGINE_SIMBOL = 15 
+DIMENSIUNE_CELULA = 220 
+MARGINE_SIMBOL = 28 
 
 # --- Setări Animație (Fluidă + Evidențiere) ---
 # Viteza de rotire (pixeli pe secundă)
@@ -79,7 +82,8 @@ LINII_PLATA = {
 }
 
 # --- Mapare Nume Fișiere Grafice ---
-CALE_FUNDAL = 'grafica/grafica/bg.png'
+CALE_FUNDAL = 'grafica/grafica/bg1.png'
+
 
 MAPARE_GRAFICA = {
     WILD: 'grafica/grafica/tiganu.png',
