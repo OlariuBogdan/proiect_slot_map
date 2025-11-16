@@ -5,8 +5,8 @@ LATIME = 1280
 INALTIME = 720
 FPS = 60
 
-# --- Mapare Nume Fișiere Grafice ---
-CALE_FUNDAL = 'grafica/grafica/bg.png'
+# # --- Mapare Nume Fișiere Grafice ---
+# CALE_FUNDAL = 'grafica/grafica/bg.png'
 
 # --- Setări de Dimensiune ---
 DIMENSIUNE_CELULA = 220 

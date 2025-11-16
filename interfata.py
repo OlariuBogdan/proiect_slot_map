@@ -38,6 +38,10 @@ class Interfata:
         banda_jos_rect = pygame.Rect(0, s.INALTIME - 60, s.LATIME, 80)
         pygame.draw.rect(self.ecran, 'black', banda_jos_rect)
         
+        # ---- De desenat banda sus
+        
+        
+        
         miza_totala = miza_pe_linie * numar_linii
         
         text_balanta = f"Credit: {balanta:.2f} RON"
