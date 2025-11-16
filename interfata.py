@@ -6,7 +6,7 @@ import setari as s
 CULOARE_TEXT = (255, 255, 255) # Alb
 CULOARE_CASTIG = (255, 215, 0) # Auriu
 MARIME_FONT_PRINCIPAL = 30
-MARIME_FONT_CASTIG = 50
+MARIME_FONT_CASTIG = 40
 
 class Interfata:
     """
@@ -16,8 +16,8 @@ class Interfata:
         self.ecran = pygame.display.get_surface()
         
         try:
-            self.font_principal = pygame.font.Font('grafica/font/kidspace.ttf', MARIME_FONT_PRINCIPAL)
-            self.font_castig = pygame.font.Font('grafica/font/kidspace.ttf', MARIME_FONT_CASTIG)
+            self.font_principal = pygame.font.Font('grafica/grafica/font/kdspace.ttf', MARIME_FONT_PRINCIPAL)
+            self.font_castig = pygame.font.Font('grafica/grafica/font/kdspace.ttf', MARIME_FONT_CASTIG)
         except FileNotFoundError:
             print("Avertisment: Nu am găsit fontul personalizat. Folosesc fontul implicit.")
             self.font_principal = pygame.font.Font(None, MARIME_FONT_PRINCIPAL + 5)
@@ -35,16 +35,16 @@ class Interfata:
         """
         
         # --- Desenează o bandă neagră jos pentru text ---
-        banda_jos_rect = pygame.Rect(0, s.INALTIME - 80, s.LATIME, 80)
+        banda_jos_rect = pygame.Rect(0, s.INALTIME - 70, s.LATIME, 80)
         pygame.draw.rect(self.ecran, 'black', banda_jos_rect)
         
         miza_totala = miza_pe_linie * numar_linii
         
-        text_balanta = f"Balanță: {balanta:.2f} RON"
+        text_balanta = f"Credit: {balanta:.2f} RON"
         pozitie_balanta = (200, s.INALTIME - 40)
         self.afiseaza_text(text_balanta, self.font_principal, CULOARE_TEXT, pozitie_balanta)
 
-        text_miza = f"Miză Totală: {miza_totala} RON ({numar_linii} linii)"
+        text_miza = f"Miză: {miza_totala} RON ({numar_linii} linii)"
         pozitie_miza = (s.LATIME - 200, s.INALTIME - 40)
         self.afiseaza_text(text_miza, self.font_principal, CULOARE_TEXT, pozitie_miza)
 
