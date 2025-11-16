@@ -1,0 +1,106 @@
+Pasul 1: Definirea Matematicii (Pay Table)
+Înainte de a scrie o linie de cod, trebuie să fim "designeri de joc". Avem 10 simboluri. Haideți să le clasificăm și să le dăm valori.
+
+Exemplu de clasificare pentru 10 simboluri:
+
+Simboluri Speciale (2): WILD (înlocuiește orice), SCATTER (plătește oriunde)
+
+Simboluri Mari (High-Pay) (2): ex. Șeptar, Diamant
+
+Simboluri Mici (Low-Pay) (6): ex. A, K, Q, J, 10, 9
+
+Vom crea un tabel de plată care definește cât plătește fiecare pentru 3, 4 sau 5 simboluri la rând.
+
+Pasul 2: Definirea Rolelor Virtuale (Weighted Reels)
+Aceasta este inima RTP-ului. În loc ca fiecare simbol să aibă 1/10 șanse, vom crea 5 "benzi" de role virtuale, ca în jocurile reale.
+
+O bandă (listă) va fi foarte lungă (ex. 100 de elemente).
+
+Simbolul 9 (Low-Pay) va apărea de 20 de ori pe acea bandă.
+
+Simbolul Șeptar (High-Pay) va apărea doar o dată.
+
+Vom face 5 benzi diferite (Reel 1, Reel 2... Reel 5) pentru a controla și mai bine șansele.
+
+Pasul 3: Nucleul Digital (GUI 5x3)
+Vom folosi pygame pentru a crea o fereastră.
+
+Vom scrie o clasă Symbol și o clasă Reel.
+
+Vom afișa o grilă statică de 5x3 simboluri pe ecran.
+
+Pasul 4: Logica de "Spin"
+Aici este diferența majoră față de codul tău vechi:
+
+Când apeși "Spin", nu alegem 15 simboluri la întâmplare.
+
+În schimb, pentru Rola 1, vom alege un index aleatoriu de pe banda virtuală a Rolei 1 (ex. random.randint(0, 99)).
+
+Afișăm simbolul de la acel index (rândul din mijloc), simbolul de deasupra (rândul de sus) și simbolul de dedesubt (rândul de jos).
+
+Repetăm pentru toate cele 5 role. Rezultatul este o grilă 5x3 care respectă probabilitățile noastre ponderate.
+
+Pasul 5: Logica de Verificare a Câștigului
+Vom scrie o funcție care citește matricea 5x3 rezultată.
+
+O va compara cu un set de Linii de Plată (Paylines) (ex. 10 linii fixe).
+
+Dacă găsește o potrivire (ex. 3 de 'J' pe linia 1), va consulta Tabelul de Plată (din Pasul 1) și va calcula câștigul.
+
+
+
+Calcularea RTP-ului (Return to Player) teoretic este cel mai complex aspect al designului unui slot. RTP-ul tău este compus din două părți: RTP-ul Liniilor de Plată și RTP-ul Scatter.
+
+RTP-ul total este suma acestor două.
+
+1. Matematica Liniilor de Plată (Prea Complexă pentru Calcul Manual)
+Calcularea RTP-ului exact pentru liniile de plată este extrem de complexă din cauza modului în care ai programat logica WILD (tiganu).
+
+Problema: Logica ta calculeaza_castig_linie verifică mai întâi dacă primul simbol este WILD. Dacă este, caută următorul simbol "normal" (ex. FEMEIE) și consideră întreaga linie ca fiind o linie de FEMEIE.
+
+Implicația: Aceasta înseamnă că o linie WILD, WILD, WILD este numărată ca un câștig pentru toate simbolurile posibile (SAPTE, FEMEIE, CAL, etc.) în același timp, făcând un calcul manual (care trebuie să separe aceste probabilități) aproape imposibil.
+
+Ce pot să-ți spun: Logica ta WILD este foarte "generoasă" și crește RTP-ul considerabil, deoarece un WILD pe prima rolă are o valoare imensă.
+
+2. Matematica Câștigurilor Scatter (Calculabil)
+Spre deosebire de liniile de plată, matematica SCATTER (caruta) este directă și o putem calcula.
+
+Logica ta (verificare_scatter) caută numărul total de simboluri SCATTER oriunde pe grila 5x3 (15 celule).
+
+Probabilitatea (p): Șansa ca o singură celulă să fie SCATTER este 1/22 (deoarece fiecare bandă de rolă are 1 SCATTER pe 22 de poziții).
+
+Încercări (n): Avem 15 celule (5 coloane x 3 rânduri).
+
+Folosim o distribuție binomială pentru a găsi șansele:
+
+Șansa pentru 3 Scattere: P(k=3)
+
+C(15, 3) * (1/22)^3 * (21/22)^12 = 455 * 0.0000939 * 0.5735 = 0.0245 (sau 2.45%)
+
+Șansa pentru 4 Scattere: P(k=4)
+
+C(15, 4) * (1/22)^4 * (21/22)^11 = 1365 * 0.0000042 * 0.5996 = 0.0034 (sau 0.34%)
+
+Șansa pentru 5 Scattere: P(k=5)
+
+C(15, 5) * (1/22)^5 * (21/22)^10 = 3003 * 0.00000019 * 0.6259 = 0.0003 (sau 0.03%)
+
+Calculul RTP-ului pentru Scatter
+Acum înmulțim șansele cu plățile (care sunt multiplicatori ai Mizei Totale):
+
+Retur 3 Scatter: 0.0245 * 5x = 0.1225 (12.25%)
+
+Retur 4 Scatter: 0.0034 * 20x = 0.0680 (6.80%)
+
+Retur 5 Scatter: 0.0003 * 50x = 0.0150 (1.50%)
+
+RTP-ul total (doar din Scattere) = 12.25% + 6.80% + 1.50% = 20.55%
+
+Concluzie
+Doar componenta Scatter a jocului tău returnează jucătorului 20.55% din toți banii pariați.
+
+RTP-ul total al jocului tău = (RTP Linii de Plată) + 20.55%
+
+Fără a rula o simulare de miliarde de rotiri (singura metodă de a rezolva logica ta complexă WILD), 
+este imposibil de calculat manual RTP-ul liniilor. Totuși, având în vedere cât de "generos" este WILD-ul,
+ RTP-ul total este probabil mult peste 100%, ceea ce înseamnă că, pe termen lung, acest slot ar da faliment cazinoului și ar îmbogăți jucătorul.
