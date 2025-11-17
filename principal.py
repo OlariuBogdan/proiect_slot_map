@@ -8,6 +8,10 @@ from interfata import Interfata
 class Joc:
     def __init__(self):
         pygame.init()
+        # --- NOU: Inițializăm mixer-ul pentru sunete ---
+        pygame.mixer.init()
+        # ---------------------------------------------
+        
         self.ecran = pygame.display.set_mode((s.LATIME, s.INALTIME), pygame.SCALED | pygame.FULLSCREEN)
         pygame.display.set_caption('Slot Machine - Teme MAP')
         self.ceas = pygame.time.Clock()
@@ -19,20 +23,27 @@ class Joc:
             print("Notă: Nu s-a încărcat niciun fundal (CALE_FUNDAL nu e definită în setari.py). Se folosește fundal negru.")
             self.fundal = None
             
-        # --- MODIFICARE: Încărcăm Masca ---
         try:
-            # Folosim .convert_alpha() pentru a păstra transparența măștii
             self.masca = pygame.image.load(s.CALE_MASCA).convert_alpha()
             self.masca = pygame.transform.scale(self.masca, (s.LATIME, s.INALTIME))
         except (AttributeError, FileNotFoundError):
             print("Notă: Nu s-a încărcat nicio mască (CALE_MASCA nu e definită sau fișierul lipsește).")
             self.masca = None
+        
+        # --- NOU: Încărcăm sunetele ---
+        try:
+            self.sunet_spin = pygame.mixer.Sound(s.CALE_SUNET_SPIN)
+            self.sunet_castig = pygame.mixer.Sound(s.CALE_SUNET_CASTIG)
+        except (AttributeError, FileNotFoundError, pygame.error) as e:
+            print(f"Avertisment: Nu s-au putut încărca sunetele. Eroare: {e}")
+            self.sunet_spin = None
+            self.sunet_castig = None
         # ---------------------------------
         
         # Starea jocului
         self.poate_roti = True
         
-        # --- Datele jucătorului ---
+        # Datele jucătorului
         self.balanta = 1000.00
         self.index_miza = s.MIZA_INITIALA_INDEX
         self.miza_pe_linie = s.MIZE_POSIBILE[self.index_miza]
@@ -80,7 +91,6 @@ class Joc:
                 pygame.quit()
                 sys.exit()
             
-            # --- MODIFICAT: Logică START/STOP pentru tasta SPACE ---
             if eveniment.type == pygame.KEYDOWN:
                 if eveniment.key == pygame.K_ESCAPE:
                     pygame.quit()
@@ -90,26 +100,23 @@ class Joc:
                     if self.poate_roti:
                         self.spin()
                     else:
-                        self.stop_spin() # <-- Apelăm noua funcție
+                        self.stop_spin()
             
-            # --- MODIFICAT: Verificare Click Mouse ---
             if eveniment.type == pygame.MOUSEBUTTONDOWN:
-                if eveniment.button == 1: # Click stânga
+                if eveniment.button == 1: 
                     pozitie_mouse = pygame.mouse.get_pos()
                     
-                    # Verificăm butoanele de miză (doar dacă se poate roti)
                     if self.poate_roti:
                         if self.interfata.rect_miza_minus and self.interfata.rect_miza_minus.collidepoint(pozitie_mouse):
                             self.schimba_miza(-1) 
                         elif self.interfata.rect_miza_plus and self.interfata.rect_miza_plus.collidepoint(pozitie_mouse):
                             self.schimba_miza(1)
                             
-                    # --- NOU: Verificăm butonul START/STOP ---
                     if self.interfata.rect_start_stop and self.interfata.rect_start_stop.collidepoint(pozitie_mouse):
                         if self.poate_roti:
                             self.spin()
                         else:
-                            self.stop_spin() # <-- Apelăm noua funcție
+                            self.stop_spin()
                         
     def schimba_miza(self, directie):
         """ Modifică miza pe linie în sus (+1) sau în jos (-1), bazat pe lista din setari.py. """
@@ -137,11 +144,15 @@ class Joc:
         self.balanta -= self.miza_totala
         self.ultimul_castig_din_spin = 0 
         
+        # --- NOU: Redăm sunetul de spin ---
+        if self.sunet_spin:
+            self.sunet_spin.play()
+        # -----------------------------------
+        
         for i, rola in enumerate(self.lista_role):
             durata_ms = 1000 + (i * 300)
             rola.start_spin(durata_ms)
             
-    # --- METODĂ NOUĂ ADĂUGATĂ ---
     def stop_spin(self):
         """ 
         Forțează toate rolele care încă se rotesc (sunt în 'SPINNING') 
@@ -150,8 +161,7 @@ class Joc:
         print("STOP cerut de utilizator!")
         for rola in self.lista_role:
             if rola.stare == 'SPINNING':
-                rola.stare = 'STOPPING' # rola.py va prelua de aici
-    # --- Sfârșit metodă nouă ---
+                rola.stare = 'STOPPING' 
             
     def update(self):
         """ Actualizează logica jocului în fiecare frame. """
@@ -172,6 +182,11 @@ class Joc:
             if castig_total > 0:
                 print(f"Ai câștigat: {castig_total} RON!")
                 self.balanta += castig_total
+                
+                # --- NOU: Redăm sunetul de câștig ---
+                if self.sunet_castig:
+                    self.sunet_castig.play()
+                # -------------------------------------
 
     def get_matrice_rezultat(self):
         """
@@ -181,6 +196,7 @@ class Joc:
         matrice_randuri = [list(rand) for rand in zip(*coloane)]
         return matrice_randuri
 
+    # --- LINIA CORECTATĂ (FĂRĂ PUNCT ȘI SPAȚIU) ---
     def verificare_castiguri_linii(self, matrice_randuri):
         """ Verifică toate liniile de plată și returnează câștigul total. """
         castig_total_spin = 0
@@ -257,13 +273,12 @@ class Joc:
         if self.masca:
             self.ecran.blit(self.masca, (0, 0))
             
-        # --- MODIFICAT: Trimitem 'poate_roti' la interfata ---
         self.interfata.desenare(
             balanta=self.balanta, 
             miza_pe_linie=self.miza_pe_linie, 
             numar_linii=self.numar_linii_plata, 
             ultimul_castig=self.ultimul_castig_din_spin,
-            poate_roti=self.poate_roti # <-- Argument nou
+            poate_roti=self.poate_roti 
         )
         
         pygame.display.flip()

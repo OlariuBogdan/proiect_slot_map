@@ -79,10 +79,8 @@ LINII_PLATA = {
 }
 
 # --- Mapare Nume Fișiere Grafice ---
-#CALE_FUNDAL = 'grafica/grafica/bg0.png'
-# --- LINIE NOUĂ ADĂUGATĂ ---
-#CALE_MASCA = 'grafica/grafica/bg.png' # Asigură-te că ai un fișier 'masca_cadru.png' în 'grafica/'
-
+CALE_FUNDAL = 'grafica/grafica/bg0.png'
+CALE_MASCA = 'grafica/grafica/bg.png' 
 
 MAPARE_GRAFICA = {
     WILD: 'grafica/grafica/tiganu.png',
@@ -97,9 +95,12 @@ MAPARE_GRAFICA = {
     TAMBURINA: 'grafica/grafica/tamburina.png'
 }
 
-# --- SECȚIUNE NOUĂ ADĂUGATĂ ---
 # --- Setări Miză ---
-# Lista de mize posibile (pe linie)
 MIZE_POSIBILE = [0.10, 0.20, 0.50, 1.00, 2.00, 5.00, 10.00]
-# Indexul din lista de mai sus cu care începe jocul (aici: 1.00)
-MIZA_INITIALA_INDEX = 3
+MIZA_INITIALA_INDEX = 3 
+
+# --- SECȚIUNE NOUĂ ADĂUGATĂ ---
+# --- Setări Audio ---
+# Asigură-te că ai un folder 'audio' cu aceste fișiere
+CALE_SUNET_SPIN = 'sunet/spin.wav'
+CALE_SUNET_CASTIG = 'sunet/win.wav'
