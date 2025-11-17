@@ -5,9 +5,6 @@ LATIME = 1280
 INALTIME = 720
 FPS = 60
 
-# # --- Mapare Nume Fișiere Grafice ---
-# CALE_FUNDAL = 'grafica/grafica/bg.png'
-
 # --- Setări de Dimensiune ---
 DIMENSIUNE_CELULA = 220 
 MARGINE_SIMBOL = 28 
@@ -82,7 +79,9 @@ LINII_PLATA = {
 }
 
 # --- Mapare Nume Fișiere Grafice ---
-CALE_FUNDAL = 'grafica/grafica/bg1.png'
+CALE_FUNDAL = 'grafica/grafica/bg0.png'
+# --- LINIE NOUĂ ADĂUGATĂ ---
+CALE_MASCA = 'grafica/grafica/bg.png' # Asigură-te că ai un fișier 'masca_cadru.png' în 'grafica/'
 
 
 MAPARE_GRAFICA = {

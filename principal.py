@@ -18,6 +18,16 @@ class Joc:
         except (AttributeError, FileNotFoundError):
             print("Notă: Nu s-a încărcat niciun fundal (CALE_FUNDAL nu e definită în setari.py). Se folosește fundal negru.")
             self.fundal = None
+            
+        # --- MODIFICARE: Încărcăm Masca ---
+        try:
+            # Folosim .convert_alpha() pentru a păstra transparența măștii
+            self.masca = pygame.image.load(s.CALE_MASCA).convert_alpha()
+            self.masca = pygame.transform.scale(self.masca, (s.LATIME, s.INALTIME))
+        except (AttributeError, FileNotFoundError):
+            print("Notă: Nu s-a încărcat nicio mască (CALE_MASCA nu e definită sau fișierul lipsește).")
+            self.masca = None
+        # ---------------------------------
         
         # Starea jocului
         self.poate_roti = True
@@ -54,12 +64,10 @@ class Joc:
         timp_anterior = pygame.time.get_ticks()
 
         while True:
-            # --- MODIFICARE: Calcul delta_time corect ---
-            # delta_time este timpul (în secunde) scurs de la ultimul frame
+            # Calcul delta_time corect
             timp_curent = pygame.time.get_ticks()
-            self.delta_time = (timp_curent - timp_anterior) / 1000.0 # Împărțim la 1000.0 pt secunde
+            self.delta_time = (timp_curent - timp_anterior) / 1000.0
             timp_anterior = timp_curent
-            # ----------------------------------------------
             
             self.gestioneaza_evenimente()
             self.update()
@@ -100,11 +108,10 @@ class Joc:
     def update(self):
         """ Actualizează logica jocului în fiecare frame. """
         
-        # --- MODIFICARE: Trimitem delta_time la fiecare rolă ---
+        # Trimitem delta_time la fiecare rolă
         for rola in self.lista_role:
             rola.update(self.delta_time)
-        # ----------------------------------------------------
-            
+        
         # Verificăm dacă s-a terminat o rotire (toate rolele sunt 'IDLE')
         if not self.poate_roti and all(rola.stare == 'IDLE' for rola in self.lista_role):
             self.poate_roti = True 
@@ -193,14 +200,21 @@ class Joc:
     def desenare(self):
         """ Desenează totul pe ecran. """
         
+        # 1. Desenează Fundalul
         if self.fundal:
             self.ecran.blit(self.fundal, (0, 0))
         else:
             self.ecran.fill((20, 20, 20))
         
+        # 2. Desenează Rolele
         for rola in self.lista_role:
             rola.desenare(self.ecran)
             
+        # 3. MODIFICARE: Desenează Masca (peste role)
+        if self.masca:
+            self.ecran.blit(self.masca, (0, 0))
+            
+        # 4. Desenează Interfața (deasupra tuturor)
         self.interfata.desenare(
             balanta=self.balanta, 
             miza_pe_linie=self.miza_pe_linie, 
