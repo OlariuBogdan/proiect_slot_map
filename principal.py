@@ -8,9 +8,7 @@ from interfata import Interfata
 class Joc:
     def __init__(self):
         pygame.init()
-        # --- NOU: Inițializăm mixer-ul pentru sunete ---
         pygame.mixer.init()
-        # ---------------------------------------------
         
         self.ecran = pygame.display.set_mode((s.LATIME, s.INALTIME), pygame.SCALED | pygame.FULLSCREEN)
         pygame.display.set_caption('Slot Machine - Teme MAP')
@@ -30,14 +28,22 @@ class Joc:
             print("Notă: Nu s-a încărcat nicio mască (CALE_MASCA nu e definită sau fișierul lipsește).")
             self.masca = None
         
-        # --- NOU: Încărcăm sunetele ---
+        # --- MODIFICAT: Încărcăm sunetele ---
         try:
             self.sunet_spin = pygame.mixer.Sound(s.CALE_SUNET_SPIN)
             self.sunet_castig = pygame.mixer.Sound(s.CALE_SUNET_CASTIG)
+            self.sunet_click = pygame.mixer.Sound(s.CALE_SUNET_CLICK) # <-- NOU
         except (AttributeError, FileNotFoundError, pygame.error) as e:
             print(f"Avertisment: Nu s-au putut încărca sunetele. Eroare: {e}")
             self.sunet_spin = None
             self.sunet_castig = None
+            self.sunet_click = None # <-- NOU
+        
+        # Diagnosticare
+        if self.sunet_spin and self.sunet_castig and self.sunet_click: # <-- MODIFICAT
+            print("DIAGNOSTIC: Toate sunetele au fost încărcate cu succes!")
+        else:
+            print("DIAGNOSTIC: Unul sau mai multe sunete NU au fost create.")
         # ---------------------------------
         
         # Starea jocului
@@ -84,6 +90,13 @@ class Joc:
             self.desenare()
             self.ceas.tick(s.FPS) 
 
+    # --- METODĂ NOUĂ ADĂUGATĂ ---
+    def play_click_sound(self):
+        """ Redă sunetul de click dacă acesta există. """
+        if self.sunet_click:
+            self.sunet_click.play()
+    # ---------------------------
+
     def gestioneaza_evenimente(self):
         """ Gestionează input-ul (tastatură, mouse, închidere fereastră). """
         for eveniment in pygame.event.get():
@@ -102,21 +115,32 @@ class Joc:
                     else:
                         self.stop_spin()
             
+            # --- MODIFICAT: Adăugăm sunetul de click ---
             if eveniment.type == pygame.MOUSEBUTTONDOWN:
                 if eveniment.button == 1: 
                     pozitie_mouse = pygame.mouse.get_pos()
                     
+                    buton_apasat = False # Flag pentru a reda sunetul o singură dată
+                    
                     if self.poate_roti:
                         if self.interfata.rect_miza_minus and self.interfata.rect_miza_minus.collidepoint(pozitie_mouse):
                             self.schimba_miza(-1) 
+                            buton_apasat = True # Am apăsat un buton
                         elif self.interfata.rect_miza_plus and self.interfata.rect_miza_plus.collidepoint(pozitie_mouse):
                             self.schimba_miza(1)
+                            buton_apasat = True # Am apăsat un buton
                             
                     if self.interfata.rect_start_stop and self.interfata.rect_start_stop.collidepoint(pozitie_mouse):
                         if self.poate_roti:
                             self.spin()
                         else:
                             self.stop_spin()
+                        buton_apasat = True # Am apăsat un buton
+                    
+                    # Dacă oricare buton a fost apăsat, redă sunetul
+                    if buton_apasat:
+                        self.play_click_sound()
+            # --- Sfârșit modificare ---
                         
     def schimba_miza(self, directie):
         """ Modifică miza pe linie în sus (+1) sau în jos (-1), bazat pe lista din setari.py. """
@@ -128,9 +152,14 @@ class Joc:
         if self.index_miza >= numar_mize:
             self.index_miza = numar_mize - 1
             
-        self.miza_pe_linie = s.MIZE_POSIBILE[self.index_miza]
+        # Verificăm dacă miza s-a schimbat efectiv (nu e blocată la capete)
+        miza_noua = s.MIZE_POSIBILE[self.index_miza]
+        if self.miza_pe_linie != miza_noua:
+            self.miza_pe_linie = miza_noua
+            print(f"Miza schimbată la: {self.miza_pe_linie:.2f} RON pe linie.")
+        
         self.miza_totala = self.miza_pe_linie * self.numar_linii_plata
-        print(f"Miza schimbată la: {self.miza_pe_linie:.2f} RON pe linie.")
+        
 
     def spin(self):
         """ Inițiază o nouă rotire. """
@@ -144,10 +173,8 @@ class Joc:
         self.balanta -= self.miza_totala
         self.ultimul_castig_din_spin = 0 
         
-        # --- NOU: Redăm sunetul de spin ---
         if self.sunet_spin:
             self.sunet_spin.play()
-        # -----------------------------------
         
         for i, rola in enumerate(self.lista_role):
             durata_ms = 1000 + (i * 300)
@@ -183,10 +210,8 @@ class Joc:
                 print(f"Ai câștigat: {castig_total} RON!")
                 self.balanta += castig_total
                 
-                # --- NOU: Redăm sunetul de câștig ---
                 if self.sunet_castig:
                     self.sunet_castig.play()
-                # -------------------------------------
 
     def get_matrice_rezultat(self):
         """
@@ -196,7 +221,6 @@ class Joc:
         matrice_randuri = [list(rand) for rand in zip(*coloane)]
         return matrice_randuri
 
-    # --- LINIA CORECTATĂ (FĂRĂ PUNCT ȘI SPAȚIU) ---
     def verificare_castiguri_linii(self, matrice_randuri):
         """ Verifică toate liniile de plată și returnează câștigul total. """
         castig_total_spin = 0

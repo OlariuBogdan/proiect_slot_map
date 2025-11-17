@@ -104,3 +104,4 @@ MIZA_INITIALA_INDEX = 3
 # Asigură-te că ai un folder 'audio' cu aceste fișiere
 CALE_SUNET_SPIN = 'sunet/spin.wav'
 CALE_SUNET_CASTIG = 'sunet/win.wav'
+CALE_SUNET_CLICK = 'sunet/click.wav'
