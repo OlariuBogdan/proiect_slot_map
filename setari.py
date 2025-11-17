@@ -96,3 +96,10 @@ MAPARE_GRAFICA = {
     ACORDEON: 'grafica/grafica/acordeon..png',
     TAMBURINA: 'grafica/grafica/tamburina.png'
 }
+
+# --- SECȚIUNE NOUĂ ADĂUGATĂ ---
+# --- Setări Miză ---
+# Lista de mize posibile (pe linie)
+MIZE_POSIBILE = [0.10, 0.20, 0.50, 1.00, 2.00, 5.00, 10.00]
+# Indexul din lista de mai sus cu care începe jocul (aici: 1.00)
+MIZA_INITIALA_INDEX = 3

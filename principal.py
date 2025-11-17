@@ -32,9 +32,10 @@ class Joc:
         # Starea jocului
         self.poate_roti = True
         
-        # Datele jucătorului
+        # --- Datele jucătorului ---
         self.balanta = 1000.00
-        self.miza_pe_linie = 1.00 
+        self.index_miza = s.MIZA_INITIALA_INDEX
+        self.miza_pe_linie = s.MIZE_POSIBILE[self.index_miza]
         self.numar_linii_plata = len(s.LINII_PLATA)
         self.miza_totala = self.miza_pe_linie * self.numar_linii_plata
         self.ultimul_castig_din_spin = 0.00
@@ -60,11 +61,9 @@ class Joc:
 
     def run(self):
         """ Bucla principală a jocului. """
-        # Timpul de start (pentru calculul delta_time)
         timp_anterior = pygame.time.get_ticks()
 
         while True:
-            # Calcul delta_time corect
             timp_curent = pygame.time.get_ticks()
             self.delta_time = (timp_curent - timp_anterior) / 1000.0
             timp_anterior = timp_curent
@@ -75,19 +74,56 @@ class Joc:
             self.ceas.tick(s.FPS) 
 
     def gestioneaza_evenimente(self):
-        """ Gestionează input-ul (tastatură, închidere fereastră). """
+        """ Gestionează input-ul (tastatură, mouse, închidere fereastră). """
         for eveniment in pygame.event.get():
             if eveniment.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             
+            # --- MODIFICAT: Logică START/STOP pentru tasta SPACE ---
             if eveniment.type == pygame.KEYDOWN:
                 if eveniment.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
                 
-                if eveniment.key == pygame.K_SPACE and self.poate_roti:
-                    self.spin()
+                if eveniment.key == pygame.K_SPACE:
+                    if self.poate_roti:
+                        self.spin()
+                    else:
+                        self.stop_spin() # <-- Apelăm noua funcție
+            
+            # --- MODIFICAT: Verificare Click Mouse ---
+            if eveniment.type == pygame.MOUSEBUTTONDOWN:
+                if eveniment.button == 1: # Click stânga
+                    pozitie_mouse = pygame.mouse.get_pos()
+                    
+                    # Verificăm butoanele de miză (doar dacă se poate roti)
+                    if self.poate_roti:
+                        if self.interfata.rect_miza_minus and self.interfata.rect_miza_minus.collidepoint(pozitie_mouse):
+                            self.schimba_miza(-1) 
+                        elif self.interfata.rect_miza_plus and self.interfata.rect_miza_plus.collidepoint(pozitie_mouse):
+                            self.schimba_miza(1)
+                            
+                    # --- NOU: Verificăm butonul START/STOP ---
+                    if self.interfata.rect_start_stop and self.interfata.rect_start_stop.collidepoint(pozitie_mouse):
+                        if self.poate_roti:
+                            self.spin()
+                        else:
+                            self.stop_spin() # <-- Apelăm noua funcție
+                        
+    def schimba_miza(self, directie):
+        """ Modifică miza pe linie în sus (+1) sau în jos (-1), bazat pe lista din setari.py. """
+        numar_mize = len(s.MIZE_POSIBILE)
+        self.index_miza += directie
+        
+        if self.index_miza < 0:
+            self.index_miza = 0
+        if self.index_miza >= numar_mize:
+            self.index_miza = numar_mize - 1
+            
+        self.miza_pe_linie = s.MIZE_POSIBILE[self.index_miza]
+        self.miza_totala = self.miza_pe_linie * self.numar_linii_plata
+        print(f"Miza schimbată la: {self.miza_pe_linie:.2f} RON pe linie.")
 
     def spin(self):
         """ Inițiază o nouă rotire. """
@@ -105,14 +141,24 @@ class Joc:
             durata_ms = 1000 + (i * 300)
             rola.start_spin(durata_ms)
             
+    # --- METODĂ NOUĂ ADĂUGATĂ ---
+    def stop_spin(self):
+        """ 
+        Forțează toate rolele care încă se rotesc (sunt în 'SPINNING') 
+        să intre în starea 'STOPPING'.
+        """
+        print("STOP cerut de utilizator!")
+        for rola in self.lista_role:
+            if rola.stare == 'SPINNING':
+                rola.stare = 'STOPPING' # rola.py va prelua de aici
+    # --- Sfârșit metodă nouă ---
+            
     def update(self):
         """ Actualizează logica jocului în fiecare frame. """
         
-        # Trimitem delta_time la fiecare rolă
         for rola in self.lista_role:
             rola.update(self.delta_time)
         
-        # Verificăm dacă s-a terminat o rotire (toate rolele sunt 'IDLE')
         if not self.poate_roti and all(rola.stare == 'IDLE' for rola in self.lista_role):
             self.poate_roti = True 
             
@@ -200,26 +246,24 @@ class Joc:
     def desenare(self):
         """ Desenează totul pe ecran. """
         
-        # 1. Desenează Fundalul
         if self.fundal:
             self.ecran.blit(self.fundal, (0, 0))
         else:
             self.ecran.fill((20, 20, 20))
         
-        # 2. Desenează Rolele
         for rola in self.lista_role:
             rola.desenare(self.ecran)
             
-        # 3. MODIFICARE: Desenează Masca (peste role)
         if self.masca:
             self.ecran.blit(self.masca, (0, 0))
             
-        # 4. Desenează Interfața (deasupra tuturor)
+        # --- MODIFICAT: Trimitem 'poate_roti' la interfata ---
         self.interfata.desenare(
             balanta=self.balanta, 
             miza_pe_linie=self.miza_pe_linie, 
             numar_linii=self.numar_linii_plata, 
-            ultimul_castig=self.ultimul_castig_din_spin
+            ultimul_castig=self.ultimul_castig_din_spin,
+            poate_roti=self.poate_roti # <-- Argument nou
         )
         
         pygame.display.flip()
