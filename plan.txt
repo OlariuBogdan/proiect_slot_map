@@ -104,3 +104,49 @@ RTP-ul total al jocului tău = (RTP Linii de Plată) + 20.55%
 Fără a rula o simulare de miliarde de rotiri (singura metodă de a rezolva logica ta complexă WILD), 
 este imposibil de calculat manual RTP-ul liniilor. Totuși, având în vedere cât de "generos" este WILD-ul,
  RTP-ul total este probabil mult peste 100%, ceea ce înseamnă că, pe termen lung, acest slot ar da faliment cazinoului și ar îmbogăți jucătorul.
+
+ 
+ 
+ 
+ 
+ 
+ #################################
+ De facut
+
+ Evidențierea Liniilor: După un câștig, funcția verificare_castiguri_linii ar trebui să returneze nu doar suma, ci și simbolurile specifice care au format câștigul (de ex: [simbol_R0C0, simbol_R0C1, simbol_R0C2]).
+
+Animația Simbolurilor: Vom adăuga o stare de "câștig" simbolurilor. Simbolurile câștigătoare își vor mări dimensiunea (folosind FACTOR_MARIRE_CASTIG), vor pulsa, iar restul simbolurilor care nu fac parte din câștig vor deveni semi-transparente sau întunecate.
+
+Afișarea Liniilor: Am putea desena liniile de plată câștigătoare (liniile 1-5) direct peste simboluri.
+
+2.  Funcții de Bază (Bonus și Autoplay)
+Acestea sunt funcții standard pe care le așteaptă orice jucător.
+
+Free Spins (Rotiri Gratuite): Acesta este cel mai distractiv de implementat.
+
+Declanșare: Când pică 3 sau mai multe simboluri SCATTER (caruta), pe lângă plata în bani, jucătorul primește (de exemplu) 10 rotiri gratuite.
+
+Implementare: Vom adăuga o nouă stare în Joc (de ex: self.stare = 'FREE_SPINS'). Cât timp e în această stare, spin() nu mai scade din self.balanta și un contor (self.rotiri_ramase) scade la fiecare rotire.
+
+Autoplay:
+
+Declanșare: Adăugăm un nou buton "AUTOPLAY" lângă "START".
+
+Implementare: Când e activat, jocul va apăsa automat "START" de fiecare dată când self.poate_roti devine True. Ai putea chiar adăuga un mic meniu care să întrebe "Câte rotiri? (10, 20, 50)".
+
+3.  Îmbunătățiri ale Interfeței (UI/UX)
+Acestea fac jocul mai ușor de înțeles și mai "profesionist".
+
+Tabelul de Plată (Paytable):
+
+Acum, doar tu știi cât plătește fiecare simbol. Ar trebui să adaugi un buton "INFO" sau "PAYTABLE" (poate în colțul de sus).
+
+Când e apăsat, jocul se pune pe pauză și se afișează un nou ecran care listează toate simbolurile și plățile lor (citind direct din s.TABEL_PLATA).
+
+Sunete Adiționale:
+
+Sunet de Buton: Un mic "click" când apeși pe +, -, sau START.
+
+Sunet de "Big Win": Dacă ultimul_castig este mai mare decât miza de (de exemplu) 50 de ori, redă un sunet special, mai lung și mai entuziasmant, în locul sunetului de câștig normal.
+
+Sunet de Rotire în Loop: În loc de spin.wav care se redă o singură dată, ai putea folosi un sunet scurt de "click-rola" care se repetă în rola.py atâta timp cât rola este în starea SPINNING.
