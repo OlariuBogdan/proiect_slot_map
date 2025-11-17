@@ -79,9 +79,9 @@ LINII_PLATA = {
 }
 
 # --- Mapare Nume Fișiere Grafice ---
-CALE_FUNDAL = 'grafica/grafica/bg0.png'
+#CALE_FUNDAL = 'grafica/grafica/bg0.png'
 # --- LINIE NOUĂ ADĂUGATĂ ---
-CALE_MASCA = 'grafica/grafica/bg.png' # Asigură-te că ai un fișier 'masca_cadru.png' în 'grafica/'
+#CALE_MASCA = 'grafica/grafica/bg.png' # Asigură-te că ai un fișier 'masca_cadru.png' în 'grafica/'
 
 
 MAPARE_GRAFICA = {
