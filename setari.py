@@ -79,8 +79,8 @@ LINII_PLATA = {
 }
 
 # --- Mapare Nume Fișiere Grafice ---
-CALE_FUNDAL = 'grafica/grafica/bg02.png'
-CALE_MASCA = 'grafica/grafica/bg22.png' 
+CALE_FUNDAL = 'grafica/grafica/background.png'
+CALE_MASCA = 'grafica/grafica/masca.png' 
 
 MAPARE_GRAFICA = {
     WILD: 'grafica/grafica/tiganu.png',
