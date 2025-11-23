@@ -5,7 +5,7 @@ import setari as s
 
 class Simbol(pygame.sprite.Sprite):
     """
-    Clasa Simbol a fost SIMPLIFICATĂ.
+    Reprezinta un singur pătrat grafic de pe ecran.
     Acum, ea doar ține minte imaginea și poziția.
     Logica de scalare și creare se mută în clasa Rola.
     """
