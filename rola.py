@@ -16,10 +16,7 @@ class Simbol(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = pozitie)
 
 class Rola:
-    """
-    Clasa Rola a fost RESCRISĂ COMPLET pentru animație fluidă.
-    Acum gestionează mișcarea pixel cu pixel.
-    """
+    
     def __init__(self, id_rola, pozitie_x):
         self.id_rola = id_rola
         self.pozitie_x = pozitie_x
